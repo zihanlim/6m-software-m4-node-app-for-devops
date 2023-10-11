@@ -46,7 +46,7 @@ jobs:
           command: | #the pip '|' runs the series of commands
             heroku container:login
             heroku container:push web - a limzihan-su-devops 
-            hero container:release web - a limzihan-su-devops
+            heroku container:release web - a limzihan-su-devops
         # The push command pushes the image to heroku's container registry
         # The relase command deplots the image from heroku's container registry
 
