@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@5.0.1
+  docker: circleci/docker@2.1.4
 jobs:
   build:
     docker:
@@ -10,7 +11,7 @@ jobs:
       - node/install-packages:
           pkg-manager: npm
       - run: |
-          echo "Installing dependencies..."
+          echo Installing dependencies...”
           npm install
   test:
     docker:
@@ -20,13 +21,30 @@ jobs:
       - node/install-packages:
           pkg-manager: npm
       - run: |
-          echo "Running tests..."
+          echo “Running tests...”
           npm run test
 
-workflows:
+  build-and-push:
+    executor: docker/docker #state env that we are using
+    steps:
+      - setup_remote_docker #allows us to run docker commands just in case
+      - checkout
+      - docker/check
+      - docker/build:
+          image: limzihan/education-space
+      - docker/push:
+          image: limzihan/education-space
+
+workflows: # defines how each job would run and realte to each other and
+  # any other dependent states (ex. only run if pushed to main branch)
+  #2 jobs build and test
+  # we are clearly defining which work to run first
   simple_workflow:
     jobs:
-      - build
-      - test:
+      - build #1st job
+      - test: #2nd job
           requires:
             - build
+      - build-and-push: #3rd job
+          requires:
+            - test
