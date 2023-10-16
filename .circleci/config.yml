@@ -35,34 +35,34 @@ jobs:
           image: limzihan/education-space
       - docker/push:
           image: limzihan/education-space
-  scan:
-    docker:
-      - image: cimg/node:16.10
-    environment:
-      IMAGE_NAME: limzihan/education-space # the IMAGE_NAME is a variable we could use in our jobs/steps
-    steps:
-      - checkout
-      - setup_remote_docker
-      - docker/check
-      - run: docker build -t $IMAGE_NAME.
-      # $IMAGE_NAME gets the value of the IMAGE_NAME from the environment defined above.
-      - synk/scan:
-          docker-image-name: $IMAGE_NAME
-  deploy:
-    docker:
-      - image: cimg/node:16.10
-    steps:
-      - setup_remote_docker
-      - heroku/install #installs heroku cli for our run command
-      - checkout
-      - run:
-          name: Heroku Container Push #the name of the group of commands we are runnings (optional)
-          command: | #the pip '|' runs the series of commands
-            heroku container:login
-            heroku container:push web -a limzihan-su-devops 
-            heroku container:release web -a limzihan-su-devops
-        # The push command pushes the image to heroku's container registry
-        # The relase command deplots the image from heroku's container registry
+scan:
+  docker:
+    - image: cimg/node:16.10
+  environment:
+    IMAGE_NAME: limzihan/education-space # the IMAGE_NAME is a variable we could use in our jobs/steps
+  steps:
+    - checkout
+    - setup_remote_docker
+    - docker/check
+    - run: docker build -t $IMAGE_NAME.
+    # $IMAGE_NAME gets the value of the IMAGE_NAME from the environment defined above.
+    - synk/scan:
+        docker-image-name: $IMAGE_NAME
+  # deploy:
+  #   docker:
+  #     - image: cimg/node:16.10
+  #   steps:
+  #     - setup_remote_docker
+  #     - heroku/install #installs heroku cli for our run command
+  #     - checkout
+  #     - run:
+  #         name: Heroku Container Push #the name of the group of commands we are runnings (optional)
+  #         command: | #the pip '|' runs the series of commands
+  #           heroku container:login
+  #           heroku container:push web -a limzihan-su-devops
+  #           heroku container:release web -a limzihan-su-devops
+  #       # The push command pushes the image to heroku's container registry
+  #       # The relase command deplots the image from heroku's container registry
 
 workflows: # defines how each job would run and realte to each other and
   # any other dependent states (ex. only run if pushed to main branch)
