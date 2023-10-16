@@ -47,7 +47,7 @@ jobs:
       - run: docker build -t $IMAGE_NAME.
       # $IMAGE_NAME gets the value of the IMAGE_NAME from the environment defined above.
       - synk/scan:
-        docker-image-name: $IMAGE_NAME
+          docker-image-name: $IMAGE_NAME
   deploy:
     docker:
       - image: cimg/node:16.10
