@@ -3,6 +3,7 @@ orbs:
   node: circleci/node@5.0.1 #allows us to use node orbs's command
   docker: circleci/docker@2.1.4 #allows us to use docker orbs's command
   heroku: circleci/heroku@2.0.0 #allows us to use heroku orbs's command
+  synk: synk/snyk@1.5.0 #3rd party orb of snyk
 jobs:
   build:
     docker:
@@ -34,6 +35,19 @@ jobs:
           image: limzihan/education-space
       - docker/push:
           image: limzihan/education-space
+  scan:
+    docker:
+      - image: cimg/node:16.10
+    environment:
+      IMAGE_NAME: limzihan/education-space # the IMAGE_NAME is a variable we could use in our jobs/steps
+    steps:
+      - checkout
+      - setup_remote_docker
+      - docker/check
+      - run: docker build -t $IMAGE_NAME.
+      # $IMAGE_NAME gets the value of the IMAGE_NAME from the environment defined above.
+      - synk/scan:
+        docker-image-name: $IMAGE_NAME
   deploy:
     docker:
       - image: cimg/node:16.10
@@ -63,7 +77,10 @@ workflows: # defines how each job would run and realte to each other and
       - build-and-push: #3rd job
           requires:
             - test
-      - deploy: #4th job
+      - scan: #4th job
           requires:
-            - build-and-push
+            - build
+      # - deploy: #4th job
+      #     requires:
+      #       - build-and-push
 #mini-ecercise - add the deploy job so that it depends on build-and-push
