@@ -33,8 +33,10 @@ jobs:
       - docker/check
       - docker/build:
           image: limzihan/education-space
+          tag: <<pipeline.git.tag>>
       - docker/push:
           image: limzihan/education-space
+          tag: <<pipeline.git.tag>>
   scan:
     docker:
       - image: cimg/node:16.10
@@ -63,27 +65,34 @@ jobs:
   #           heroku container:release web -a limzihan-su-devops
   #       # The push command pushes the image to heroku's container registry
   #       # The relase command deplots the image from heroku's container registry
-
-workflows: # defines how each job would run and realte to each other and
+workflows: # defines how each job would run and realted to each other and
   # any other dependent states (ex. only run if pushed to main branch)
   #2 jobs build and test
   # we are clearly defining which work to run first
   limzihan-su-devops-workflow:
     jobs:
       - build #1st job
+          filters:
+            branches:
+              only: main
       - test: #2nd job
           requires:
             - build
           filters:
             branches:
               only: main
-      - build-and-push: #3rd job
-          requires:
-            - test
+      - build-and-push: #3rd job - should run only if a tag is pushed and not when a branch is pushed
+          # requires:
+          #   - test
+          filters:
+            tags:
+              only: /^v.*/ #only considers tags starting with v (ex. v1.0.2)
+            branches:
+              ignore: /.*/ #ignores all branches
       - scan: #4th job
           requires:
             - build
       # - deploy: #4th job
       #     requires:
       #       - build-and-push
-#mini-ecercise - add the deploy job so that it depends on build-and-push
+#mini-exercise - add the deploy job so that it depends on build-and-push
