@@ -71,7 +71,7 @@ workflows: # defines how each job would run and realted to each other and
   # we are clearly defining which work to run first
   limzihan-su-devops-workflow:
     jobs:
-      - build #1st job
+      - build: #1st job
           filters:
             branches:
               only: main
