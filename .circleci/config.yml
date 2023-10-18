@@ -74,6 +74,9 @@ workflows: # defines how each job would run and realte to each other and
       - test: #2nd job
           requires:
             - build
+          filters:
+            branches:
+              only: main
       - build-and-push: #3rd job
           requires:
             - test
